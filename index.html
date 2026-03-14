@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Analysis Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f8f6f1;
+    color: #1a1a1a;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 300;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 0.4rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* ── PAPER ENTRY ── */
+  .paper {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1.4rem;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid #e0ddd7;
+    align-items: start;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.15s;
+  }
+
+  .paper:hover { opacity: 0.7; }
+
+  .paper img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+    border-radius: 2px;
+    background: #e0ddd7;
+  }
+
+  .paper-info { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .paper-ticker {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+  }
+
+  .paper-ticker .price { color: #1a1a1a; margin-left: 0.6rem; }
+  .paper-ticker .chg.up { color: #3a7d44; }
+  .paper-ticker .chg.dn { color: #b94040; }
+
+  .paper-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .paper-date { font-size: 0.78rem; color: #aaa; }
+
+  footer {
+    margin-top: 3rem;
+    font-size: 0.78rem;
+    color: #bbb;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>Stock Analysis<br>Portfolio</h1>
+<p class="subtitle">Independent equity research — click any paper to read</p>
+
+<div id="list"></div>
+
+<footer>Prices via Yahoo Finance · Updated on page load</footer>
+
+<script>
+/* =====================================================
+   ✏️  TO ADD A PAPER — copy one block below and fill in:
+
+     ticker : stock symbol for live price (e.g. "AAPL")
+     title  : your paper headline
+     url    : link to your full paper (Google Doc, PDF URL, etc.)
+     image  : a cover image URL — paste any image link here,
+              or use "" to show a plain placeholder
+     date   : date published (any string)
+===================================================== */
+const PAPERS = [
+  {
+    ticker: "NVDA",
+    title: "NVIDIA's Moat Is Wider Than the Market Thinks",
+    url: "https://example.com/nvda-paper",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+    date: "March 10, 2026"
+  },
+  {
+    ticker: "TSLA",
+    title: "Tesla's Margin Compression Is Structural, Not Cyclical",
+    url: "https://example.com/tsla-paper",
+    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&q=80",
+    date: "February 28, 2026"
+  },
+  {
+    ticker: "JPM",
+    title: "JPMorgan's Capital Allocation Machine: Why the Discount Is Unjustified",
+    url: "https://example.com/jpm-paper",
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&q=80",
+    date: "February 14, 2026"
+  },
+  {
+    ticker: "LLY",
+    title: "Eli Lilly and the GLP-1 Supercycle: Still Early Innings",
+    url: "https://example.com/lly-paper",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&q=80",
+    date: "January 15, 2026"
+  },
+  {
+    ticker: "AMZN",
+    title: "Amazon's True Earnings Power Is Hidden in Plain Sight",
+    url: "https://example.com/amzn-paper",
+    image: "https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=400&q=80",
+    date: "December 20, 2025"
+  },
+];
+/* ===================================================== */
+
+const list = document.getElementById('list');
+
+PAPERS.forEach(p => {
+  const a = document.createElement('a');
+  a.className = 'paper';
+  a.href = p.url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+
+  const img = document.createElement('img');
+  img.alt = p.ticker;
+  if (p.image) img.src = p.image;
+
+  const info = document.createElement('div');
+  info.className = 'paper-info';
+  info.innerHTML = `
+    <div class="paper-ticker" id="price-${p.ticker}">${p.ticker}</div>
+    <div class="paper-title">${p.title}</div>
+    <div class="paper-date">${p.date}</div>
+  `;
+
+  a.appendChild(img);
+  a.appendChild(info);
+  list.appendChild(a);
+});
+
+/* Live prices via Yahoo Finance — no API key required */
+async function fetchPrice(ticker) {
+  try {
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=2d`
+    );
+    const data = await res.json();
+    const meta = data.chart.result[0].meta;
+    const price = meta.regularMarketPrice;
+    const prev  = meta.chartPreviousClose;
+    const chg   = ((price - prev) / prev * 100).toFixed(2);
+    const up    = parseFloat(chg) >= 0;
+    const el    = document.getElementById('price-' + ticker);
+    if (el) {
+      el.innerHTML = `${ticker} <span class="price">$${price.toFixed(2)}</span> <span class="chg ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${Math.abs(chg)}%</span>`;
+    }
+  } catch (_) { /* shows ticker only if fetch fails */ }
+}
+
+PAPERS.forEach(p => fetchPrice(p.ticker));
+</script>
+</body>
+</html>
