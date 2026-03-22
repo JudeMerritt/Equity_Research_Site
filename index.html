@@ -268,11 +268,13 @@ updateCount(PAPERS.length);
 /* Live prices via Yahoo Finance */
 async function fetchPrice(ticker) {
   try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=2d`;
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=2d`
+      `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
     );
-    const data = await res.json();
-    const meta = data.chart.result[0].meta;
+    const wrapper = await res.json();
+    const data = JSON.parse(wrapper.contents);
+    const meta  = data.chart.result[0].meta;
     const price = meta.regularMarketPrice;
     const prev  = meta.chartPreviousClose;
     const chg   = ((price - prev) / prev * 100).toFixed(2);
