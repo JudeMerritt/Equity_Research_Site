@@ -1,1 +1,1 @@
-# Stock_Analysis_Site
+# Equity_Research_Site
